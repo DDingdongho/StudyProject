@@ -5,7 +5,19 @@
 #include "SUnrealObjectClass.generated.h"
 
 UCLASS()
-class STUDYPROJECT_API SUnrealObjectClass : public UObject
+class STUDYPROJECT_API USUnrealObjectClass : public UObject
 {
 	GENERATED_BODY()
+
+public:
+    USUnrealObjectClass();
+
+    UFUNCTION()
+    void HelloUnreal();
+
+    const FString& GetName() const { return Name; }
+
+public:
+    UPROPERTY()
+    FString Name;
 };
