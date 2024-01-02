@@ -1,5 +1,9 @@
 #include "Game/SGameInstance.h"
 #include "SUnrealObjectClass.h"
+#include "Examples/SFlyable.h"
+#include "Examples/SPigeon.h"
+#include "JsonObjectConverter.h"
+#include "UObject/SavePackage.h"
 
 USGameInstance::USGameInstance()
 {
@@ -14,51 +18,31 @@ void USGameInstance::Init()
 {
     Super::Init(); // 엔진 업데이트 루틴을 지키기 위해서, 언리얼 엔지니어가 작성한 코드가 먼저 실행되게끔 하기 위함.
 
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Init() has been called."));
+    TMap<int32, FString> BirdMap;
+    BirdMap.Add(5, TEXT("Pigeon"));
+    BirdMap.Add(2, TEXT("Owl"));
+    BirdMap.Add(7, TEXT("Albatross"));
+    // BirdMap == [
+    //  { Key: 5, Value: "Pigeon"     },
+    //  { Key: 2, Value: "Owl"        },
+    //  { Key: 7, Value: "Albatross"  }
+    // ]
 
-    UClass* RuntimeClassInfo = GetClass();
-    UClass* CompiletimeClassInfo = StaticClass();
+    BirdMap.Add(2, TEXT("Penquin"));
+    // BirdMap == [
+    //  { Key: 5, Value: "Pigeon"     },
+    //  { Key: 2, Value: "Penquin"    },
+    //  { Key: 7, Value: "Albatross"  }
+    // ]
 
-    //check(RuntimeClassInfo != CompiletimeClassInfo); 주석 풀어서 결과 확인 필요.
-    //ensure(RuntimeClassInfo != CompiletimeClassInfo);
-    //ensureMsgf(RuntimeClassInfo != CompiletimeClassInfo, TEXT("Intentional Error"));
+    FString* BirdIn7 = BirdMap.Find(7);
+    // *BirdIn7 == "Albatross"
+    FString* BirdIn8 = BirdMap.Find(8);
+    // *BirdIn8 == nullptr
 
-    UE_LOG(LogTemp, Log, TEXT("Class Name: %s"), *RuntimeClassInfo->GetName());
-
-    Name = TEXT("USGameInstance Object");
-    // CDO를 통해 생성된 개체의 Name 속성에 새롭게 대입되는 값.
-
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Name: %s"), *(GetClass()->GetDefaultObject<USGameInstance>()->Name));
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Name: %s"), *Name);
-
-    USUnrealObjectClass* USObject1 = NewObject<USUnrealObjectClass>();
-    // 언리얼은 이런식으로 new 키워드를 안쓰고 NewObject<>() API를 사용해야 함.
-
-    UE_LOG(LogTemp, Log, TEXT("USObject1's Name: %s"), *USObject1->GetName());
-    // 우리가 정의한 Getter()
-
-    FProperty* NameProperty = USUnrealObjectClass::StaticClass()->FindPropertyByName(TEXT("Name"));
-    // 프로퍼티 시스템을 활용한 Getter()
-
-    FString CompiletimeUSObjectName;
-    if (nullptr != NameProperty)
-    {
-        NameProperty->GetValue_InContainer(USObject1, &CompiletimeUSObjectName);
-        UE_LOG(LogTemp, Log, TEXT("CompiletimeUSObjectName: %s"), *CompiletimeUSObjectName);
-    }
-
-    USObject1->HelloUnreal();
-
-    UFunction* HelloUnrealFunction = USObject1->GetClass()->FindFunctionByName(TEXT("HelloUnreal"));
-    if (nullptr != HelloUnrealFunction)
-    {
-        USObject1->ProcessEvent(HelloUnrealFunction, nullptr);
-    }
 }
 
 void USGameInstance::Shutdown()
 {
     Super::Shutdown();
-
-    UE_LOG(LogTemp, Log, TEXT("USGameInstance::Shutdown() has been called."));
 }
